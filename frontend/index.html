@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#080f1e" />
+  <title>SentinelShield | Vehicle Intelligence</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar" id="sidebar">
+      <div class="brand">
+        <div class="brand-mark"><span class="brand-shield">S</span></div>
+        <div><div class="brand-name">SENTINEL<span>SHIELD</span></div><div class="brand-sub">VEHICLE INTELLIGENCE</div></div>
+      </div>
+
+      <div class="nav-label">WORKSPACE</div>
+      <nav class="nav">
+        <a class="nav-link active" href="#overview"><span class="nav-icon">▦</span> Overview</a>
+        <a class="nav-link" href="#live"><span class="nav-icon">◉</span> Live monitoring</a>
+        <a class="nav-link" href="#analytics"><span class="nav-icon">⌁</span> Analytics</a>
+        <a class="nav-link" href="#alerts"><span class="nav-icon">⚑</span> Alert history</a>
+      </nav>
+
+      <div class="sidebar-bottom">
+        <div class="system-card">
+          <div class="system-card-top"><span class="pulse-dot"></span> SYSTEM STATUS</div>
+          <div class="system-status" id="connectionText">Connecting…</div>
+          <div class="system-caption" id="connectionSub">Checking API connection</div>
+        </div>
+        <div class="sidebar-footer">SENTINELSHIELD <span>•</span> PROTOTYPE 1.0</div>
+      </div>
+    </aside>
+
+    <main class="main-content">
+      <header class="topbar">
+        <button class="menu-btn" id="menuBtn" aria-label="Toggle navigation">☰</button>
+        <div class="breadcrumb">Workspace <span>/</span> <strong>Overview</strong></div>
+        <div class="topbar-right">
+          <div class="live-indicator"><span class="pulse-dot"></span> LIVE DATA</div>
+          <div class="top-date" id="currentDate">—</div>
+          <div class="avatar">SS</div>
+
+          <button class="logout-btn" onclick="logout()">Logout</button>
+        </div>
+      </header>
+
+      <section class="page-content" id="overview">
+        <div class="page-heading">
+          <div>
+            <div class="eyebrow">VEHICLE SECURITY PLATFORM</div>
+            <h1>Command <span>Center</span></h1>
+            <p class="page-subtitle">Real-time visibility into vehicle activity, sensor signals and security events.</p>
+          </div>
+          <div class="heading-actions">
+            <div class="vehicle-chip"><span class="vehicle-icon">▰</span><div><small>MONITORED VEHICLE</small><strong>Vehicle #01</strong></div></div>
+            <button class="refresh-btn" id="refreshBtn"><span>↻</span> Refresh</button>
+          </div>
+        </div>
+
+        <div class="status-banner" id="statusBanner">
+          <div class="banner-icon" id="bannerIcon">✓</div>
+          <div class="banner-copy"><strong id="bannerTitle">Waiting for sensor data</strong><span id="bannerMessage">The dashboard will update automatically when readings arrive.</span></div>
+          <div class="banner-time" id="lastUpdated">LAST UPDATE —</div>
+        </div>
+
+        <div class="section-title-row">
+          <div><h2>Live overview</h2><p>Latest values received from ESP32</p></div>
+          <div class="auto-refresh"><span class="pulse-dot"></span> Auto-refresh <strong>2 sec</strong></div>
+        </div>
+
+        <div class="metric-grid" id="live">
+          <article class="metric-card fuel-card">
+            <div class="metric-top"><div class="metric-label">FUEL LEVEL</div><div class="metric-icon fuel-icon">◒</div></div>
+            <div class="metric-value"><span id="fuelValue">--</span><small>%</small></div>
+            <div class="progress-track"><div class="progress-fill fuel-fill" id="fuelBar" style="width:0%"></div></div>
+            <div class="metric-foot"><span>Current tank estimate</span><strong id="fuelState">Awaiting data</strong></div>
+          </article>
+
+          <article class="metric-card distance-card">
+            <div class="metric-top"><div class="metric-label">ULTRASONIC DISTANCE</div><div class="metric-icon distance-icon">⌖</div></div>
+            <div class="metric-value"><span id="distanceValue">--</span><small>cm</small></div>
+            <div class="metric-description">Nearest measured object distance</div>
+            <div class="metric-foot"><span>Detection threshold</span><strong>20 cm</strong></div>
+          </article>
+
+          <article class="metric-card anomaly-card">
+            <div class="metric-top"><div class="metric-label">DETECTION STATUS</div><div class="metric-icon anomaly-icon">◎</div></div>
+            <div class="anomaly-value" id="anomalyValue">NO DATA</div>
+            <div class="metric-description" id="anomalyDescription">Waiting for hardware event</div>
+            <div class="metric-foot"><span>Latest sensor condition</span><strong id="anomalyTime">—</strong></div>
+          </article>
+
+          <article class="metric-card threat-card">
+            <div class="metric-top"><div class="metric-label">THREAT SCORE</div><div class="metric-icon threat-icon">⬡</div></div>
+            <div class="metric-value"><span id="threatValue">--</span><small>/100</small></div>
+            <div class="threat-meter"><div id="threatBar" style="width:0%"></div></div>
+            <div class="metric-foot"><span>Rule-based assessment</span><strong id="threatLevel">Awaiting data</strong></div>
+          </article>
+        </div>
+        <section class="spark-analytics" id="analytics">
+
+  <div class="section-title-row">
+    <div>
+      <h2>Spark Analytics</h2>
+      <p>Historical security analysis powered by Apache Spark and Scala</p>
+    </div>
+    <span class="panel-tag" id="analyticsStatus">WAITING FOR DATA</span>
+  </div>
+
+  <div class="analytics-grid">
+
+    <article class="analytics-card">
+      <span>Total Events</span>
+      <strong id="sparkTotal">--</strong>
+      <small>Recorded sensor events</small>
+    </article>
+
+    <article class="analytics-card">
+      <span>High Threats</span>
+      <strong class="analytics-danger" id="sparkHigh">--</strong>
+      <small>High-risk events</small>
+    </article>
+
+    <article class="analytics-card">
+      <span>Medium Threats</span>
+      <strong class="analytics-warning" id="sparkMedium">--</strong>
+      <small>Events requiring attention</small>
+    </article>
+
+    <article class="analytics-card">
+      <span>Low Threats</span>
+      <strong class="analytics-safe" id="sparkLow">--</strong>
+      <small>Low-risk events</small>
+    </article>
+
+    <article class="analytics-card">
+      <span>Person Detections</span>
+      <strong id="sparkPerson">--</strong>
+      <small>Person detection events</small>
+    </article>
+
+    <article class="analytics-card">
+      <span>Fuel Theft</span>
+      <strong id="sparkFuelTheft">--</strong>
+      <small>Fuel theft alerts</small>
+    </article>
+
+    <article class="analytics-card">
+      <span>Vibration Alerts</span>
+      <strong id="sparkVibration">--</strong>
+      <small>Vibration detection events</small>
+    </article>
+
+    <article class="analytics-card">
+      <span>Normal Events</span>
+      <strong id="sparkNormal">--</strong>
+      <small>Normal sensor readings</small>
+    </article>
+
+  </div>
+
+  <div class="content-grid analytics-charts">
+
+    <section class="panel">
+      <div class="panel-heading">
+        <div>
+          <h2>Anomaly Analysis</h2>
+          <p>Distribution of detected sensor events</p>
+        </div>
+        <span class="panel-tag">SPARK DATA</span>
+      </div>
+      <div class="spark-chart-wrap">
+        <canvas id="sparkAnomalyChart"></canvas>
+      </div>
+    </section>
+
+    <section class="panel">
+      <div class="panel-heading">
+        <div>
+          <h2>Threat Level Analysis</h2>
+          <p>Security classification of recorded events</p>
+        </div>
+        <span class="panel-tag">SPARK DATA</span>
+      </div>
+      <div class="spark-chart-wrap">
+        <canvas id="sparkThreatChart"></canvas>
+      </div>
+    </section>
+
+  </div>
+
+  <section class="panel spark-statistics">
+    <div class="panel-heading">
+      <div>
+        <h2>Sensor Statistics</h2>
+        <p>Calculated from historical sensor readings</p>
+      </div>
+      <span class="panel-tag">AGGREGATED DATA</span>
+    </div>
+
+    <div class="statistics-grid">
+      <div>
+        <span>Average Fuel</span>
+        <strong id="sparkAvgFuel">--</strong>
+        <small>%</small>
+      </div>
+      <div>
+        <span>Average Distance</span>
+        <strong id="sparkAvgDistance">--</strong>
+        <small>cm</small>
+      </div>
+      <div>
+        <span>Average Threat Score</span>
+        <strong id="sparkAvgThreat">--</strong>
+        <small>/ 100</small>
+      </div>
+      <div>
+        <span>Maximum Threat Score</span>
+        <strong id="sparkMaxThreat">--</strong>
+        <small>/ 100</small>
+      </div>
+    </div>
+
+    <div class="analytics-generated">
+      Last Spark analysis: <strong id="sparkGeneratedAt">Waiting for data</strong>
+    </div>
+  </section>
+
+</section>
+
+        <div class="content-grid">
+          <section class="panel chart-panel"></section>
+            <div class="panel-heading"><div><h2>Sensor activity</h2><p>Recent fuel and distance readings</p></div><span class="panel-tag">LATEST 30 RECORDS</span></div>
+            <div class="chart-legend"><span><i class="legend-dot fuel-dot"></i> Fuel (%)</span><span><i class="legend-dot distance-dot"></i> Distance (cm)</span></div>
+            <div class="chart-wrap"><canvas id="sensorChart"></canvas></div>
+          </section>
+
+          <section class="panel distribution-panel">
+            <div class="panel-heading"><div><h2>Threat distribution</h2><p>Events recorded in recent history</p></div><span class="mini-menu">•••</span></div>
+            <div class="donut-wrap"><canvas id="threatChart"></canvas><div class="donut-center"><strong id="eventCount">0</strong><span>EVENTS</span></div></div>
+            <div class="distribution-legend">
+              <div><i class="legend-dot normal-dot"></i><span>Normal</span><strong id="normalCount">0</strong></div>
+              <div><i class="legend-dot medium-dot"></i><span>Person detected</span><strong id="personCount">0</strong></div>
+              <div><i class="legend-dot high-dot"></i><span>Fuel / vibration alert</span><strong id="highCount">0</strong></div>
+            </div>
+          </section>
+        </div>
+
+        <section class="panel alerts-panel" id="alerts">
+          <div class="panel-heading"><div><h2>Recent activity</h2><p>Latest records received from the hardware</p></div><span class="panel-tag">LIVE FEED</span></div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>EVENT</th><th>FUEL</th><th>DISTANCE</th><th>THREAT SCORE</th><th>LEVEL</th><th>TIMESTAMP</th></tr></thead>
+              <tbody id="historyBody"><tr><td colspan="6" class="empty-state">Waiting for sensor records…</td></tr></tbody>
+            </table>
+          </div>
+        </section>
+
+        <footer class="footer"><span>© 2026 SENTINELSHIELD</span><span>ESP32 · FLASK API · MYSQL</span><span>SECURE VEHICLE MONITORING</span></footer>
+      </section>
+    </main>
+  </div>
+  <div class="toast" id="toast"></div>
+  <script>
+    if (sessionStorage.getItem("sentinelLoggedIn") !== "true") {
+        window.location.href = "login.html";
+    }
+</script>
+<script>
+    function logout() {
+        sessionStorage.removeItem("sentinelLoggedIn");
+        window.location.href = "login.html";
+    }
+</script>
+<script src="script.js"></script>
+</body>
+</html>
